@@ -1,0 +1,52 @@
+name: Build Android
+
+on:
+  push:
+    branches: ["**"]
+    tags-ignore: ["v*"]
+  pull_request:
+
+jobs:
+  android:
+    name: Build APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "stable"
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Android NDK
+        uses: nttld/setup-ndk@v1
+        id: ndk
+        with:
+          ndk-version: r27c
+
+      - name: Install Fyne CLI
+        run: go install fyne.io/fyne/v2/cmd/fyne@latest
+
+      - name: Build APK
+        env:
+          ANDROID_NDK_HOME: ${{ steps.ndk.outputs.ndk-path }}
+        run: |
+          fyne package \
+            -os android \
+            -appID com.keenetic.tray \
+            -name "keenetic-tray"
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: keenetic-tray-${{ github.sha }}.apk
+          path: "*.apk"
+          retention-days: 14
+          if-no-files-found: error

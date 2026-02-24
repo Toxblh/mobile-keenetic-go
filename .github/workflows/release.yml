@@ -1,0 +1,76 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  android:
+    name: Build APK
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "stable"
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: nttld/setup-ndk@v1
+        id: ndk
+        with:
+          ndk-version: r27c
+      - run: go install fyne.io/fyne/v2/cmd/fyne@latest
+      - name: Build APK
+        env:
+          ANDROID_NDK_HOME: ${{ steps.ndk.outputs.ndk-path }}
+        run: fyne package -os android -appID com.keenetic.tray -name "keenetic-tray"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-android
+          path: "*.apk"
+          retention-days: 1
+
+  ios:
+    name: Build iOS bundle
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "stable"
+      - run: go install fyne.io/fyne/v2/cmd/fyne@latest
+      - name: Build iOS app bundle
+        run: |
+          fyne package -os ios -appID com.keenetic.tray -name "keenetic-tray"
+          zip -r keenetic-tray-ios.zip "keenetic-tray.app"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-ios
+          path: keenetic-tray-ios.zip
+          retention-days: 1
+
+  release:
+    name: Create GitHub Release
+    needs: [android, ios]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: release-*
+          merge-multiple: true
+          path: release/
+      - run: ls -lh release/
+      - uses: softprops/action-gh-release@v2
+        with:
+          name: ${{ github.ref_name }}
+          draft: false
+          prerelease: ${{ contains(github.ref_name, '-') }}
+          generate_release_notes: true
+          files: release/*

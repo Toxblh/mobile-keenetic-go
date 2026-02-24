@@ -1,0 +1,48 @@
+name: Build iOS
+
+on:
+  push:
+    branches: ["**"]
+    tags-ignore: ["v*"]
+  pull_request:
+
+jobs:
+  ios:
+    name: Build .app bundle
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "stable"
+
+      - name: Install Fyne CLI
+        run: go install fyne.io/fyne/v2/cmd/fyne@latest
+
+      - name: Build iOS app bundle
+        # Builds an unsigned .app bundle.
+        # Installing on a real device requires a valid Apple Developer certificate.
+        # The simulator build can be run with Xcode without a paid account.
+        run: |
+          fyne package \
+            -os ios \
+            -appID com.keenetic.tray \
+            -name "keenetic-tray"
+
+      - name: Zip app bundle
+        run: zip -r keenetic-tray-ios.zip "keenetic-tray.app"
+
+      - name: Upload app bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: keenetic-tray-ios-${{ github.sha }}
+          path: keenetic-tray-ios.zip
+          retention-days: 14
+          if-no-files-found: error
+
+# ── Release workflow note ─────────────────────────────────────────────────────
+# For releases (tag v*), add a release.yml that collects APK + iOS zip
+# and attaches them to a GitHub Release (same pattern as desktop/release.yml).
