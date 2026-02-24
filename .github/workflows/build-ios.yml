@@ -31,9 +31,9 @@ jobs:
         # The simulator build can be run with Xcode without a paid account.
         run: |
           fyne package \
-            -os ios \
-            -appID com.keenetic.tray \
-            -name "keenetic-tray"
+            --os ios \
+            --app-id com.keenetic.tray \
+            --name "keenetic-tray"
 
       - name: Zip app bundle
         run: zip -r keenetic-tray-ios.zip "keenetic-tray.app"

@@ -16,20 +16,22 @@ fyne-cli:
 ## Build Android APK
 ## Requires: Android NDK, ANDROID_NDK_HOME set
 android: fyne-cli
+	go run gen_icon.go
 	fyne package \
-		-os android \
-		-appID $(APP_ID) \
-		-name "$(APP_NAME)"
+		--os android \
+		--app-id $(APP_ID) \
+		--name "$(APP_NAME)"
 	mkdir -p $(BUILD_DIR)
 	mv "$(APP_NAME).apk" $(BUILD_DIR)/
 
 ## Build iOS app bundle
 ## Requires: macOS + Xcode + Apple Developer account for device distribution
 ios: fyne-cli
+	go run gen_icon.go
 	fyne package \
-		-os ios \
-		-appID $(APP_ID) \
-		-name "$(APP_NAME)"
+		--os ios \
+		--app-id $(APP_ID) \
+		--name "$(APP_NAME)"
 	mkdir -p $(BUILD_DIR)
 	mv "$(APP_NAME).app" $(BUILD_DIR)/
 

@@ -30,7 +30,7 @@ jobs:
       - name: Build APK
         env:
           ANDROID_NDK_HOME: ${{ steps.ndk.outputs.ndk-path }}
-        run: fyne package -os android -appID com.keenetic.tray -name "keenetic-tray"
+        run: fyne package -os android --app-id com.keenetic.tray -name "keenetic-tray"
       - uses: actions/upload-artifact@v4
         with:
           name: release-android
@@ -49,7 +49,7 @@ jobs:
       - run: go run gen_icon.go
       - name: Build iOS app bundle
         run: |
-          fyne package -os ios -appID com.keenetic.tray -name "keenetic-tray"
+          fyne package -os ios --app-id com.keenetic.tray -name "keenetic-tray"
           zip -r keenetic-tray-ios.zip "keenetic-tray.app"
       - uses: actions/upload-artifact@v4
         with:
