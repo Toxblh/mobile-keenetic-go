@@ -11,7 +11,7 @@ all: android
 
 ## Install the fyne CLI tool (run once)
 fyne-cli:
-	go install fyne.io/fyne/v2/cmd/fyne@latest
+	go install fyne.io/tools/cmd/fyne@latest
 
 ## Build Android APK
 ## Requires: Android NDK, ANDROID_NDK_HOME set

@@ -20,7 +20,10 @@ jobs:
           go-version: "stable"
 
       - name: Install Fyne CLI
-        run: go install fyne.io/fyne/v2/cmd/fyne@latest
+        run: go install fyne.io/tools/cmd/fyne@latest
+
+      - name: Generate icon
+        run: go run gen_icon.go
 
       - name: Build iOS app bundle
         # Builds an unsigned .app bundle.

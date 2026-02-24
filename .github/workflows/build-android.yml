@@ -32,7 +32,10 @@ jobs:
           ndk-version: r27c
 
       - name: Install Fyne CLI
-        run: go install fyne.io/fyne/v2/cmd/fyne@latest
+        run: go install fyne.io/tools/cmd/fyne@latest
+
+      - name: Generate icon
+        run: go run gen_icon.go
 
       - name: Build APK
         env:

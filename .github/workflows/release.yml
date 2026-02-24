@@ -25,7 +25,8 @@ jobs:
         id: ndk
         with:
           ndk-version: r27c
-      - run: go install fyne.io/fyne/v2/cmd/fyne@latest
+      - run: go install fyne.io/tools/cmd/fyne@latest
+      - run: go run gen_icon.go
       - name: Build APK
         env:
           ANDROID_NDK_HOME: ${{ steps.ndk.outputs.ndk-path }}
@@ -44,7 +45,8 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version: "stable"
-      - run: go install fyne.io/fyne/v2/cmd/fyne@latest
+      - run: go install fyne.io/tools/cmd/fyne@latest
+      - run: go run gen_icon.go
       - name: Build iOS app bundle
         run: |
           fyne package -os ios -appID com.keenetic.tray -name "keenetic-tray"
