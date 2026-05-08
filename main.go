@@ -12,6 +12,5 @@ func main() {
 
 	ui := newMainUI(a, w)
 	w.SetContent(ui.content())
-	
 	w.ShowAndRun()
 }
